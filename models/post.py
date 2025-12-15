@@ -4,7 +4,7 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.database import Base
+from ..database import Base
 
 class Post(Base):
     __tablename__ = "posts"

@@ -4,7 +4,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.database import Base
+from ..database import Base
 
 class User(Base):
     __tablename__ = "users"  # 테이블 이름
