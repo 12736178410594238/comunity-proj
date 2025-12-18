@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}홈 - 나의 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>환영합니다! 👋</h1>
+    <p>FastAPI로 만든 커뮤니티에 오신 것을 환영합니다.</p>
+    <div class="hero-buttons">
+        <a href="/posts" class="btn btn-primary">게시글 보기</a>
+        <a href="/register" class="btn btn-secondary" id="hero-register-btn">회원가입</a>
+    </div>
+</div>
+
+<section class="features">
+    <h2>주요 기능</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <span class="feature-icon">📝</span>
+            <h3>게시글 작성</h3>
+            <p>자유롭게 글을 작성하고 공유하세요.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">💬</span>
+            <h3>댓글</h3>
+            <p>다른 사람의 글에 의견을 남겨보세요.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">❤️</span>
+            <h3>좋아요</h3>
+            <p>마음에 드는 글에 좋아요를 눌러주세요.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🔍</span>
+            <h3>검색</h3>
+            <p>원하는 게시글을 쉽게 찾아보세요.</p>
+        </div>
+    </div>
+</section>
+
+<section class="recent-posts">
+    <h2>최신 게시글</h2>
+    <div id="recent-posts-list">
+        <!-- 자바스크립트로 로드 -->
+        <p class="loading">로딩 중...</p>
+    </div>
+    <a href="/posts" class="btn btn-outline">더 보기</a>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 최신 게시글 로드
+    async function loadRecentPosts() {
+        try {
+            const response = await fetch('/api/posts?limit=5');
+            const posts = await response.json();
+            
+            const container = document.getElementById('recent-posts-list');
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<p class="empty">아직 게시글이 없습니다.</p>';
+                return;
+            }
+            
+            container.innerHTML = posts.map(post => `
+                <div class="post-preview" onclick="location.href='/posts/${post.id}'">
+                    <span class="post-category">${post.category}</span>
+                    <h3>${post.title}</h3>
+                    <div class="post-meta">
+                        <span>${post.author.nickname || post.author.username}</span>
+                        <span>조회 ${post.view_count}</span>
+                        <span>💬 ${post.comment_count}</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('게시글 로드 실패:', error);
+        }
+    }
+    
+    loadRecentPosts();
+</script>
+{% endblock %}

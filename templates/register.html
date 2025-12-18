@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}회원가입 - 나의 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>회원가입</h1>
+        <form id="register-form" class="auth-form">
+            <div class="form-group">
+                <label for="username">아이디 *</label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="3자 이상 입력" minlength="3" maxlength="50">
+            </div>
+            <div class="form-group">
+                <label for="email">이메일 *</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="example@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호 *</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="6자 이상 입력" minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="password-confirm">비밀번호 확인 *</label>
+                <input type="password" id="password-confirm" required 
+                       placeholder="비밀번호를 다시 입력">
+            </div>
+            <div class="form-group">
+                <label for="nickname">닉네임 (선택)</label>
+                <input type="text" id="nickname" name="nickname" 
+                       placeholder="커뮤니티에서 사용할 이름">
+            </div>
+            <div id="error-message" class="error-message"></div>
+            <button type="submit" class="btn btn-primary btn-full">가입하기</button>
+        </form>
+        <p class="auth-link">
+            이미 계정이 있으신가요? <a href="/login">로그인</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('password-confirm').value;
+        
+        if (password !== passwordConfirm) {
+            document.getElementById('error-message').textContent = '비밀번호가 일치하지 않습니다.';
+            return;
+        }
+        
+        const userData = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: password,
+            nickname: document.getElementById('nickname').value || null
+        };
+        
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('회원가입이 완료되었습니다! 로그인해주세요.');
+                window.location.href = '/login';
+            } else {
+                document.getElementById('error-message').textContent = data.detail;
+            }
+        } catch (error) {
+            console.error('회원가입 실패:', error);
+            document.getElementById('error-message').textContent = '서버 오류가 발생했습니다.';
+        }
+    });
+</script>

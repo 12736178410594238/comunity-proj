@@ -6,11 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
 
-from app.database import get_db
-from app.models.user import User
-from app.schemas.user import UserCreate, UserResponse, Token
-from app.services.auth import AuthService, get_current_user
-from app.config import settings
+from ..database import get_db
+from ..models.user import User
+from ..schemas.user import UserCreate, UserResponse, Token
+from ..services.auth import AuthService, get_current_user
+from ..config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["인증"])
 
