@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}게시판 | 나의 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>게시판</h2>
+    <a href="/posts/new" class="btn btn-primary">글 작성</a>
+  </div>
+
+  <div class="mb-3">
+    <form class="d-flex">
+      <select class="form-select me-2" name="category" style="width: 150px;">
+        <option value="">전체</option>
+        <option value="자유게시판">자유게시판</option>
+        <option value="질문">질문</option>
+        <option value="정보">정보</option>
+      </select>
+      <input class="form-control me-2" type="search" placeholder="검색" aria-label="Search" name="search">
+      <button class="btn btn-outline-success" type="submit">검색</button>
+    </form>
+  </div>
+
+  {% if posts %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">카테고리</th>
+        <th scope="col">제목</th>
+        <th scope="col">작성자</th>
+        <th scope="col">작성일</th>
+        <th scope="col">조회수</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr onclick="window.location='/posts/{{ post.id }}';" style="cursor:pointer;">
+        <th scope="row">{{ loop.index }}</th>
+        <td><span class="badge bg-secondary">{{ post.category }}</span></td>
+        <td>{{ post.title }} <span class="text-muted">[{{ post.comment_count }}]</span></td>
+        <td>{{ post.author.nickname or post.author.username }}</td>
+        <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+        <td>{{ post.view_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="alert alert-warning" role="alert">
+      아직 작성된 게시글이 없습니다.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

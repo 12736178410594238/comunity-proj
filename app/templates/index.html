@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}홈 - 나의 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+      <h1 class="display-5 fw-bold">환영합니다! 👋</h1>
+      <p class="col-md-8 fs-4">FastAPI로 만든 커뮤니티에 오신 것을 환영합니다.</p>
+      <a href="/posts" class="btn btn-primary btn-lg">게시글 보기</a>
+      <a href="/register" class="btn btn-secondary btn-lg" id="hero-register-btn">회원가입</a>
+    </div>
+  </div>
+
+<section class="features mb-5">
+    <h2 class="text-center mb-4">주요 기능</h2>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">📝 게시글 작성</h5>
+                    <p class="card-text">자유롭게 글을 작성하고 공유하세요.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">💬 댓글</h5>
+                    <p class="card-text">다른 사람의 글에 의견을 남겨보세요.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">❤️ 좋아요</h5>
+                    <p class="card-text">마음에 드는 글에 좋아요를 눌러주세요.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">🔍 검색</h5>
+                    <p class="card-text">원하는 게시글을 쉽게 찾아보세요.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="recent-posts">
+    <h2 class="mb-4">최신 게시글</h2>
+    <div class="list-group">
+        {% if posts %}
+            {% for post in posts %}
+                <a href="/posts/{{ post.id }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ post.title }}</h5>
+                        <small>{{ post.created_at.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    <p class="mb-1"><span class="badge bg-primary">{{ post.category }}</span></p>
+                    <small>글쓴이: {{ post.author.nickname or post.author.username }} | 조회수: {{ post.view_count }} | 댓글: {{ post.comment_count }}</small>
+                </a>
+            {% endfor %}
+        {% else %}
+            <p class="list-group-item">아직 게시글이 없습니다.</p>
+        {% endif %}
+    </div>
+    <div class="text-center mt-3">
+        <a href="/posts" class="btn btn-outline-primary">더 보기</a>
+    </div>
+</section>
+{% endblock %}

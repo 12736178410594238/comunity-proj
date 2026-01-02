@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}글 작성 | 나의 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title text-center">새 게시글 작성</h2>
+        <form action="/api/posts" method="POST">
+          <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="게시글 제목" required>
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" id="content" name="content" placeholder="내용을 입력하세요" rows="8" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="category" class="form-label">카테고리</label>
+            <select class="form-select" id="category" name="category">
+              <option value="자유게시판">자유게시판</option>
+              <option value="질문">질문</option>
+              <option value="정보">정보</option>
+            </select>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

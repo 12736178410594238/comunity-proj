@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | 나의 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <article>
+    <header class="mb-4">
+      <h1 class="fw-bolder mb-1">{{ post.title }}</h1>
+      <div class="text-muted fst-italic mb-2">
+        작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }} | 작성자: {{ post.author.nickname or post.author.username }} | 조회수: {{ post.view_count }}
+      </div>
+      <span class="badge bg-secondary">{{ post.category }}</span>
+    </header>
+    <section class="mb-5">
+      <p class="fs-5" style="white-space: pre-wrap;">{{ post.content }}</p>
+    </section>
+  </article>
+
+  <hr/>
+
+  <section class="mb-5">
+    <div class="card bg-light">
+      <div class="card-body">
+        <h5 class="card-title mb-4">댓글 ({{ comments|length }})</h5>
+        <!-- Comment form-->
+        <form class="mb-4">
+          <textarea class="form-control" rows="3" placeholder="댓글을 남겨주세요..."></textarea>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+            <button class="btn btn-primary" type="submit">등록</button>
+          </div>
+        </form>
+        
+        <!-- Comments list -->
+        {% for comment in comments %}
+        <div class="d-flex mb-4">
+          <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+          <div class="ms-3">
+            <div class="fw-bold">{{ comment.author.nickname or comment.author.username }}</div>
+            <p>{{ comment.content }}</p>
+            <div class="text-muted fst-italic fs-sm">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+          </div>
+        </div>
+        {% endfor %}
+        
+      </div>
+    </div>
+  </section>
+  <a href="/posts" class="btn btn-primary">목록으로</a>
+</div>
+{% endblock %}

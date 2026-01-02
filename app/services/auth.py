@@ -15,7 +15,7 @@ from ..database import get_db
 from ..models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
-MAX_PASSWORD_BYTES = 72
+MAX_PASSWORD_BYTES = 72  # bcrypt only accepts up to 72 bytes
 
 
 class AuthService:
