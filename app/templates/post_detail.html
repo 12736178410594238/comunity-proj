@@ -24,14 +24,15 @@
       <div class="card-body">
         <h5 class="card-title mb-4">댓글 ({{ comments|length }})</h5>
         <!-- Comment form-->
-        <form class="mb-4">
-          <textarea class="form-control" rows="3" placeholder="댓글을 남겨주세요..."></textarea>
+        <form id="comment-form" method="POST" action="/api/posts/{{ post.id }}/comments" class="mb-4">
+          <textarea id="comment-content" name="content" class="form-control" rows="3" placeholder="{% if current_user %}댓글을 남겨주세요...{% else %}로그인 후 댓글을 작성할 수 있습니다.{% endif %}" {% if not current_user %}disabled{% endif %}></textarea>
           <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-            <button class="btn btn-primary" type="submit">등록</button>
+            <button class="btn btn-primary" type="submit" {% if not current_user %}disabled{% endif %}>등록</button>
           </div>
         </form>
         
         <!-- Comments list -->
+        <div id="comments-list">
         {% for comment in comments %}
         <div class="d-flex mb-4">
           <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
@@ -42,10 +43,85 @@
           </div>
         </div>
         {% endfor %}
+        </div>
         
       </div>
     </div>
   </section>
   <a href="/posts" class="btn btn-primary">목록으로</a>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if current_user %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('comment-form');
+    const commentContent = document.getElementById('comment-content');
+    const commentsList = document.getElementById('comments-list');
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const errorModalBody = document.getElementById('errorModalBody');
+
+    const createCommentElement = (comment) => {
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'd-flex mb-4';
+
+        const authorNickname = comment.author.nickname || comment.author.username;
+        const createdAt = new Date(comment.created_at).toLocaleString('ko-KR', {
+            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+        });
+
+        commentDiv.innerHTML = `
+            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+            <div class="ms-3">
+                <div class="fw-bold">${authorNickname}</div>
+                <p>${comment.content}</p>
+                <div class="text-muted fst-italic fs-sm">${createdAt}</div>
+            </div>
+        `;
+        return commentDiv;
+    };
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        
+        const content = commentContent.value.trim();
+        if (!content) {
+            errorModalBody.innerHTML = '댓글 내용을 입력해주세요.';
+            errorModal.show();
+            return;
+        }
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(newComment => {
+            const newCommentElement = createCommentElement(newComment);
+            commentsList.prepend(newCommentElement); // Add new comment to the top of the list
+            commentContent.value = ''; // Clear textarea
+        })
+        .catch(error => {
+            let errorMessage = "댓글 작성 중 오류가 발생했습니다.";
+            if (error.detail && Array.isArray(error.detail)) {
+                errorMessage = error.detail.map(d => d.msg).join('<br>');
+            } else if (error.detail) {
+                errorMessage = error.detail;
+            }
+            errorModalBody.innerHTML = errorMessage;
+            errorModal.show();
+        });
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

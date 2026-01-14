@@ -8,7 +8,7 @@
     <div class="card">
       <div class="card-body">
         <h2 class="card-title text-center">로그인</h2>
-        <form action="/api/auth/login" method="POST">
+        <form id="login-form" action="/api/auth/login" method="POST">
           <div class="mb-3">
             <label for="username" class="form-label">아이디</label>
             <input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력하세요" required>
@@ -26,4 +26,47 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('login-form');
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const errorModalBody = document.getElementById('errorModalBody');
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(formData),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw err;
+                });
+            }
+            // On success, the server redirects. We follow it to the home page.
+            window.location.href = response.url;
+        })
+        .catch(error => {
+            let errorMessage = "알 수 없는 오류가 발생했습니다.";
+            if (error.detail && Array.isArray(error.detail)) {
+                errorMessage = error.detail.map(d => d.msg).join('<br>');
+            } else if (error.detail) {
+                errorMessage = error.detail;
+            }
+            errorModalBody.innerHTML = errorMessage;
+            errorModal.show();
+        });
+    });
+});
+</script>
 {% endblock %}

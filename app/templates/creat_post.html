@@ -8,7 +8,7 @@
     <div class="card">
       <div class="card-body">
         <h2 class="card-title text-center">새 게시글 작성</h2>
-        <form action="/api/posts" method="POST">
+        <form id="create-post-form" action="/api/posts" method="POST">
           <div class="mb-3">
             <label for="title" class="form-label">제목</label>
             <input type="text" class="form-control" id="title" name="title" placeholder="게시글 제목" required>
@@ -33,4 +33,47 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('create-post-form');
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const errorModalBody = document.getElementById('errorModalBody');
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(formData),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw err;
+                });
+            }
+            // On success, the server redirects to the new post's page.
+            window.location.href = response.url;
+        })
+        .catch(error => {
+            let errorMessage = "글 작성 중 오류가 발생했습니다.";
+            if (error.detail && Array.isArray(error.detail)) {
+                errorMessage = error.detail.map(d => d.msg).join('<br>');
+            } else if (error.detail) {
+                errorMessage = error.detail;
+            }
+            errorModalBody.innerHTML = errorMessage;
+            errorModal.show();
+        });
+    });
+});
+</script>
 {% endblock %}
